@@ -1,0 +1,30 @@
+body, div, span {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+body {
+	line-height: 1;
+}
+
+.tile-container {
+  display: flex;
+  height: 100%;
+
+  .tile-column {
+    outline: blue solid 1px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .tile-row {
+      outline: red solid 1px;
+      flex-grow: 1;
+    }
+  }
+}
