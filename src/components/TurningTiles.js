@@ -3,6 +3,40 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class TurningTiles extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      textIndex: 0,
+      intervalId: '',
+    };
+    this.textIndexIncrementer = this.textIndexIncrementer.bind(this);
+  }
+
+  componentDidMount() {
+    const { lifecycle } = this.props;
+    const { tileTexts } = this.props;
+    if (tileTexts.length > 1) {
+      const intervalId = setInterval(this.textIndexIncrementer, lifecycle);
+      this.setState({ intervalId });
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId);
+  }
+
+  textIndexIncrementer() {
+    const { tileTexts } = this.props;
+    const { textIndex } = this.state;
+
+    if (textIndex < tileTexts.length - 1) {
+      console.log("here");
+      this.setState({ textIndex: textIndex + 1 });
+    } else {
+      this.setState({ textIndex: 0 });
+    }
+  }
+
   renderChildren() {
     const { size } = this.props;
     const arrayX = Array.apply(null, { length: size.x }).map(Number.call, Number);
@@ -17,16 +51,19 @@ class TurningTiles extends React.Component {
   }
 
   render() {
+    const { tileTexts } = this.props;
+    const { textIndex } = this.state;
     return (
       <div className="tile-container">
         {this.renderChildren()}
+        { tileTexts[textIndex] }
       </div>
     );
   }
 }
 
 TurningTiles.defaultProps = {
-  tileTexts: [],
+  tileTexts: ['Test text', 'Jotain muuta'],
   textOrientation: {
     x: 'center',
     y: 'center'
