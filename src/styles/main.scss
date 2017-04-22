@@ -15,15 +15,16 @@ body {
 .tile-container {
   display: flex;
   height: 100%;
+  flex-direction: column;
 
-  .tile-column {
-    outline: blue solid 1px;
+  .tile-row {
     display: flex;
-    flex-direction: column;
+    outline: red solid 1px;
     flex-grow: 1;
+    flex-direction: row;
 
-    .tile-row {
-      outline: red solid 1px;
+    .tile-cell {
+      outline: blue solid 1px;
       flex-grow: 1;
     }
   }

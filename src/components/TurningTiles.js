@@ -30,7 +30,6 @@ class TurningTiles extends React.Component {
     const { textIndex } = this.state;
 
     if (textIndex < tileTexts.length - 1) {
-      console.log("here");
       this.setState({ textIndex: textIndex + 1 });
     } else {
       this.setState({ textIndex: 0 });
@@ -42,11 +41,11 @@ class TurningTiles extends React.Component {
     const arrayX = Array.apply(null, { length: size.x }).map(Number.call, Number);
     const arrayY = Array.apply(null, { length: size.y }).map(Number.call, Number);
 
-    return arrayX.map((x) => {
-      const rows = arrayY.map((y) => {
-          return <div key={y} className={`tile-row y-${y}`}>Yo</div>
+    return arrayY.map((y) => {
+      const columns = arrayX.map((x) => {
+          return <div key={x} className={`tile-cell y-${x}`}>Yo</div>
       });
-      return <div key={x} className={`tile-column x-${x}`}>{rows}</div>
+      return <div key={y} className={`tile-row x-${y}`}>{columns}</div>
     });
   }
 
