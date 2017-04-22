@@ -62,26 +62,47 @@ class TurningTiles extends React.Component {
   }
 }
 
+//  TODO
+//  Mahdollista rotationType arvot, joko stringeiksi tai arrayksi.
+//  Eli, joko String tai 2-uloitteinen matriisi kuten rotationType: [0][0] = 300;
+//  Jos syötetty arvo on String, käännä se arrayksi.
+//  Esim. jos koko on x: 6 ja y: 5, syncronous-rotaatio on:
+//  Array(size.x).fill(Array(size.y).fill(0));
+//  =>
+//  [
+//  [0, 0, 0, 0, 0],
+//  [0, 0, 0, 0, 0],
+//  [0, 0, 0, 0, 0],
+//  [0, 0, 0, 0, 0],
+//  [0, 0, 0, 0, 0],
+//  [0, 0, 0, 0, 0],
+//  ];
+//
+//  VAIHDA tileColors: { '1;1': "#C0FFEE" } => tileColors[1][1]="#C0FFEE";
+//  Rotaatio syncronous = Array(size.x).fill(Array(size.y).fill(0));
 TurningTiles.defaultProps = {
-  tileTexts: ['Test text', 'Jotain muuta'],
+  tileTexts: [
+    'Test text',
+    'Jotain muuta',
+  ],
   textOrientation: {
     x: 'center',
-    y: 'center'
+    y: 'center',
   },
   size: {
     x: 6,
-    y: 5
+    y: 5,
   },
   backgroundColor: {
-    primaryColor: '#F00'
+    primaryColor: '#F00',
   },
   textColor: {
-    primaryColor: '#000'
+    primaryColor: '#000',
   },
   rotationType: 'syncronous',
   lifecycle: 3000,
   rotationDirection: 'right',
-  rotationLength: 300
+  rotationLength: 300,
 };
 
 TurningTiles.propTypes = {
