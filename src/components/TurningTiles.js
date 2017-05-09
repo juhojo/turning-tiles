@@ -1,28 +1,81 @@
 require("!style-loader!css-loader!sass-loader!../styles/main.scss");
 import React from 'react';
 import PropTypes from 'prop-types';
+import Tile from './Tile.js';
 
 class TurningTiles extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       textIndex: 0,
       intervalId: '',
     };
-    this.textIndexIncrementer = this.textIndexIncrementer.bind(this);
+    this.tiles = [];
+    this.tileColors;
+    this.transition;
+
+    this.setTiles();
+    this.setTransition();
+
+    this.performTilesChange = this.performTilesChange.bind(this);
   }
 
   componentDidMount() {
     const { lifecycle } = this.props;
     const { tileTexts } = this.props;
     if (tileTexts.length > 1) {
-      const intervalId = setInterval(this.textIndexIncrementer, lifecycle);
+      const intervalId = setInterval(this.performTilesChange, lifecycle);
       this.setState({ intervalId });
     }
   }
 
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
+  }
+
+  performTilesChange() {
+    this.textIndexIncrementer();
+  }
+
+ /**
+  * [setTiles setter for this.tiles of type Array]
+  */
+  setTiles() {
+    const {
+      backgroundColor: {
+        primaryColor,
+        tileColors,
+      },
+      size,
+    } = this.props;
+
+    this.tileColors = Array(size.y).fill(Array(size.x).fill(primaryColor));
+
+    for (let i = 0; i < size.y; i++) {
+      this.tiles[i] = [];
+      for (let j = 0; j < size.x; j++) {
+        if (tileColors && tileColors[i][j]) {
+          this.tileColors[i][j] = tileColors[i][j];
+        }
+        const tile = new Tile(this.tileColors[i][j], i, j);
+        this.tiles[i][j] = tile;
+      }
+    }
+  }
+
+  /**
+   * [setTransition setter for this.transition of type Array]
+   */
+  setTransition() {
+    const { rotationType, size } = this.props;
+    let transitionMatrix;
+    if (rotationType.constructor === Array) {
+      transitionMatrix = rotationType;
+    }
+    if (rotationType === 'syncronous') {
+      transitionMatrix = Array(size.y).fill(Array(size.x).fill(0));
+    }
+    this.transition = transitionMatrix;
   }
 
   textIndexIncrementer() {
@@ -38,14 +91,11 @@ class TurningTiles extends React.Component {
 
   renderChildren() {
     const { size } = this.props;
-    const arrayX = Array.apply(null, { length: size.x }).map(Number.call, Number);
-    const arrayY = Array.apply(null, { length: size.y }).map(Number.call, Number);
-
-    return arrayY.map((y) => {
-      const columns = arrayX.map((x) => {
-          return <div key={x} className={`tile-cell y-${x}`}>Yo</div>
+    return this.tiles.map((row, index) => {
+      const columns = row.map((tile) => {
+        return tile.draw();
       });
-      return <div key={y} className={`tile-row x-${y}`}>{columns}</div>
+      return <div key={index} className={`tile-row x-${index}`}>{columns}</div>
     });
   }
 
@@ -81,8 +131,8 @@ class TurningTiles extends React.Component {
 //  Rotaatio syncronous = Array(size.x).fill(Array(size.y).fill(0));
 TurningTiles.defaultProps = {
   tileTexts: [
-    'Test text',
-    'Jotain muuta',
+    '1',
+    '2',
   ],
   textOrientation: {
     x: 'center',
@@ -93,7 +143,7 @@ TurningTiles.defaultProps = {
     y: 5,
   },
   backgroundColor: {
-    primaryColor: '#F00',
+    primaryColor: '#FF0',
   },
   textColor: {
     primaryColor: '#000',
