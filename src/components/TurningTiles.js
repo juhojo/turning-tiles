@@ -7,12 +7,17 @@ class TurningTiles extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      textIndex: 0,
+      tileIndex: 0,
       intervalId: '',
     };
     this.tiles = [];
     this.tileColors;
     this.transition;
+
+    this.canvas;
+    this.ctx;
+    this.height;
+    this.width;
 
     this.setTiles();
     this.setTransition();
@@ -27,14 +32,65 @@ class TurningTiles extends React.Component {
       const intervalId = setInterval(this.performTilesChange, lifecycle);
       this.setState({ intervalId });
     }
+    this.setCanvas();
+    this.drawCanvas();
   }
 
   componentWillUnmount() {
     clearInterval(this.state.intervalId);
   }
 
+  // Canvas
+
+  setCanvas() {
+    this.canvas = document.getElementById("turning-tiles-canvas");
+    this.height = this.canvas.height = this.canvas.getBoundingClientRect().height;
+    this.width = this.canvas.width = this.canvas.getBoundingClientRect().width;
+    this.ctx = this.canvas.getContext("2d");
+  }
+
+  drawCanvas() {
+    const { size, images } = this.props;
+    const { tileIndex } = this.props;
+    const tileWidth = this.width / size.x;
+    const tileHeight = this.height / size.y;
+
+    for (let y = 0; y <= size.y; y++) {
+      let posy = y * tileHeight;
+      for (let x = 0; x <= size.x; x++) {
+        let posx = x * tileWidth;
+        this.ctx.moveTo(posx, posy);
+        this.ctx.fillStyle = this.colorTile(y, x);
+        this.ctx.fillRect(posx, posy, tileWidth, tileHeight);
+      }
+    }
+    images && this.drawImage(images[tileIndex]);
+    this.ctx.stroke();
+  }
+
+  colorTile(y, x) {
+    const {
+      backgroundColor: {
+        primaryColor,
+        tileColors
+      }
+    } = this.props;
+
+    if (tileColors && tileColors[y] && tileColors[y][x]) {
+      return tileColors[y][x];
+    }
+    return primaryColor;
+  }
+
+  drawImage() {
+
+  }
+
+  // Old
+
   performTilesChange() {
-    this.textIndexIncrementer();
+    this.tileIndexIncrementer();
+    this.initTransition();
   }
 
  /**
@@ -54,8 +110,10 @@ class TurningTiles extends React.Component {
     for (let i = 0; i < size.y; i++) {
       this.tiles[i] = [];
       for (let j = 0; j < size.x; j++) {
-        if (tileColors && tileColors[i][j]) {
+        if (tileColors && tileColors[i] && tileColors[i][j]) {
           this.tileColors[i][j] = tileColors[i][j];
+        } else {
+          this.tileColors[i][j] = primaryColor;
         }
         const tile = new Tile(this.tileColors[i][j], i, j);
         this.tiles[i][j] = tile;
@@ -78,15 +136,19 @@ class TurningTiles extends React.Component {
     this.transition = transitionMatrix;
   }
 
-  textIndexIncrementer() {
+  tileIndexIncrementer() {
     const { tileTexts } = this.props;
-    const { textIndex } = this.state;
+    const { tileIndex } = this.state;
 
-    if (textIndex < tileTexts.length - 1) {
-      this.setState({ textIndex: textIndex + 1 });
+    if (tileIndex < tileTexts.length - 1) {
+      this.setState({ tileIndex: tileIndex + 1 });
     } else {
-      this.setState({ textIndex: 0 });
+      this.setState({ tileIndex: 0 });
     }
+  }
+
+  initTransition() {
+    console.log('init');
   }
 
   renderChildren() {
@@ -99,13 +161,19 @@ class TurningTiles extends React.Component {
     });
   }
 
+
+    // {/* <div className="tile-container"> */}
+    //   {/* {this.renderChildren()}
+    //   { tileTexts[tileIndex] } */}
+    //   <canvas id="turning-tiles-canvas"></canvas>
+    // {/* </div> */}
+
   render() {
     const { tileTexts } = this.props;
-    const { textIndex } = this.state;
+    const { tileIndex } = this.state;
     return (
       <div className="tile-container">
-        {this.renderChildren()}
-        { tileTexts[textIndex] }
+        <canvas id="turning-tiles-canvas" style={{ height: '100%', width: '100%' }}></canvas>
       </div>
     );
   }
@@ -144,6 +212,10 @@ TurningTiles.defaultProps = {
   },
   backgroundColor: {
     primaryColor: '#FF0',
+    tileColors: [
+      ['red', 'blue'],
+      ['green']
+    ]
   },
   textColor: {
     primaryColor: '#000',

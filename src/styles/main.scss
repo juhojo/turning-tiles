@@ -12,7 +12,12 @@ body {
 	line-height: 1;
 }
 
+#turning-tiles-canvas {
+  position: absolute;
+}
+
 .tile-container {
+  position: relative;
   display: flex;
   height: 100%;
   flex-direction: column;
